@@ -35,6 +35,16 @@ class FileHandler(object):
 
     def read_the_file(self, file_name):
         file_path = self.validate_file(file_name)
+
+        # Check the length of all rows and select the max as the "correct" length
+        # You could also take first line as the "correct" length but there is a risk of it being the wrong length
+        with open(file_path) as file: 
+            max_length = len(file.readline().split(","))        
+            for line in file:
+                row_entries = line.strip().split(',')
+                if len(row_entries) > max_length:
+                    max_length = len(row_entries)
+
         with open(file_path) as file:
             for line in file:
                 row = line.strip()
@@ -45,7 +55,14 @@ class FileHandler(object):
                     if item:
                         new_row.append(item)
                     else:
-                        new_row.append(None)
+                        # Instead of appending None we append whitespace so it can be sorted as a string and will sort to the top if that column is sorted
+                        new_row.append(" ")
+
+                # If there are less entries in a row than the max_length add a whitespace entry for each missing entry
+                if len(row.split(",")) < max_length: 
+                    for i in range(max_length - len(row.split(","))):
+                        new_row.append(" ")
+
                 self.list_of_rows.append(new_row)
 
     def print_result(self):

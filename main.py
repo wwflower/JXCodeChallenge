@@ -20,7 +20,8 @@ class FileSorter(FileHandler):
         # it should be handled last. Reverse the list of column numbers
         sort_order.reverse()
         for sort_index in sort_order:
-            self.list_of_rows.sort(key=lambda row: row[sort_index])
+            # sort_index - 1 because an input of 1 needs to indicate the first row which is index 0
+            self.list_of_rows.sort(key=lambda row: row[sort_index - 1]) 
 
 
 def get_runtime_options():
@@ -33,12 +34,14 @@ def get_runtime_options():
 
     _opt(
         "-c", "--columns",
-        default=1,
+        # Changed default from int to string because that's how it would be if the user entered it
+        default="1",
         help="Enter the indexes of the columns to sort by. The first column is 1 and is the default. "
              "To enter more than one column, separate the numbers by commas with NO SPACES")
 
     if len(sys.argv) > 1:
-        cmd_options = cmd_parser.parse_args(args=sys.argv()[1:])
+        # Remove parentheses from sys.argv because it's a list and not callable
+        cmd_options = cmd_parser.parse_args(args=sys.argv[1:]) 
     else:
         cmd_parser.print_help()
         sys.exit(1)
